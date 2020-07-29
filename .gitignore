@@ -1,0 +1,7 @@
+node_modules
+*.swp
+*.swo
+config
+*.env
+*config.js
+!sample-config.js
