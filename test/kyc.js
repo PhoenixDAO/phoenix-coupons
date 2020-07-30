@@ -1,7 +1,7 @@
 const common = require('./common.js')
 const { sign, verifyIdentity } = require('./utilities')
 
-const KYC = artifacts.require('./resolvers/PhoenixgenKYC.sol')
+const KYC = artifacts.require('./resolvers/PhoenixKYC.sol')
 
 let instances
 let user

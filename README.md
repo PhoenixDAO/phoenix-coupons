@@ -21,4 +21,4 @@ This project is still under development, and dramatic changes will likely occur 
 
 
 ## Copyright & License
-© The Phoenixgen Technology Corporation 2018, under the GNU General Public License v3.0.
+© The Phoenix Technology Corporation 2018, under the GNU General Public License v3.0.
