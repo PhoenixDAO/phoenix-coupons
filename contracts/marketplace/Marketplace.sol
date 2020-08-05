@@ -22,7 +22,7 @@ contract Marketplace is ItemTags, Delivery, ReturnPolicies, MarketplaceInterface
         _constructMarketplace(paymentAddress, _CouponFeatureAddress, _ItemFeatureAddress);
     }
 */
-    function _constructMarketplace(address paymentAddress, address _CouponFeatureAddress, address _ItemFeatureAddress/*, address _snowflakeAddress*/) internal {
+    function _constructMarketplace(address paymentAddress, address _CouponFeatureAddress, address _ItemFeatureAddress/*, address _phoenixIdentityAddress*/) internal {
         //Constructing parent contracts
         _constructItemTags();
         _constructDelivery();

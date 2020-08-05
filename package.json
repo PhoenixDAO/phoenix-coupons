@@ -1,7 +1,7 @@
 {
-  "name": "snowflake-marketplace-coupons",
+  "name": "PhoenixIdentity-marketplace-coupons",
   "version": "1.0.0",
-  "description": "Coupon Marketplace smart contract built on top of Phoenix Snowflake.",
+  "description": "Coupon Marketplace smart contract built on top of Phoenix PhoenixIdentity.",
   "scripts": {
     "build": "npm run buidl",
     "buidl": "rm -rf build/ && npx truffle compile",

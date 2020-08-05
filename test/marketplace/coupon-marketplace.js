@@ -23,11 +23,11 @@ let instances
 
 /*
 
-1. Make CouponMarketPlaceVia (_snowflakeAddress)
+1. Make CouponMarketPlaceVia (_phoenixIdentityAddress)
 2. Make CouponMarketplaceResolver
 
 Pass: 
-EIN, "SnowflakeName", "Snowflake Description", SnowflakeAddress, false, false, paymentAddress, MarketplaceCouponViaAddress
+EIN, "PhoenixIdentityName", "PhoenixIdentity Description", PhoenixIdentityAddress, false, false, paymentAddress, MarketplaceCouponViaAddress
 
 
 3. Add CouponMarketplaceResolver as provider for seller
@@ -111,25 +111,25 @@ contract('Testing Coupon Marketplace', function (accounts) {
     let seller = users[0]
 
     it('add seller identity to Identity Registry', async function () {
-      await MarketplaceAPI.addToIdentityRegistry(seller, instances.IdentityRegistry, instances.Snowflake, instances.ClientRaindrop);
+      await MarketplaceAPI.addToIdentityRegistry(seller, instances.IdentityRegistry, instances.PhoenixIdentity, instances.ClientPhoenixAuthentication);
     })
 
 
     it('deploy ItemFeature contract', async function () {
-      instances.ItemFeature = await ItemFeature.new(instances.Snowflake.address, { from: seller.address })
+      instances.ItemFeature = await ItemFeature.new(instances.PhoenixIdentity.address, { from: seller.address })
       //Let's assert that this is loaded in
       //Truthiness of null/undefined is false
       assert.ok(instances.ItemFeature)
     })
 
     it('deploy CouponFeature contract', async function () {
-      instances.CouponFeature = await CouponFeature.new(instances.Snowflake.address, { from: seller.address })
+      instances.CouponFeature = await CouponFeature.new(instances.PhoenixIdentity.address, { from: seller.address })
       assert.ok(instances.CouponFeature)
     })
 
 
     it('deploy Coupon Marketplace Via contract', async function () {
-      instances.CouponMarketplaceVia = await common.deploy.couponMarketplaceVia(seller.address, instances.Snowflake.address)
+      instances.CouponMarketplaceVia = await common.deploy.couponMarketplaceVia(seller.address, instances.PhoenixIdentity.address)
       assert.ok(instances.CouponMarketplaceVia)
     })
 
@@ -139,8 +139,8 @@ contract('Testing Coupon Marketplace', function (accounts) {
 
       instances.CouponMarketplaceResolver = await CouponMarketplaceResolver.new(
         "Test-Marketplace-Resolver",
-        "A test Coupon Marketplace Resolver built on top of Phoenix Snowflake", 
-        instances.Snowflake.address,
+        "A test Coupon Marketplace Resolver built on top of Phoenix PhoenixIdentity", 
+        instances.PhoenixIdentity.address,
         false, false,
         seller.paymentAddress,
         instances.CouponMarketplaceVia.address,
@@ -159,12 +159,12 @@ contract('Testing Coupon Marketplace', function (accounts) {
     it('deploy Coupon Distribution contract', async function () {
       instances.CouponDistribution = await CouponDistribution.new(
         instances.CouponMarketplaceResolver.address,
-        instances.Snowflake.address
+        instances.PhoenixIdentity.address
       )
       assert.ok(instances.CouponDistribution)
     })
 
-    it('set Coupon Distribution address within SnowflakeEINMarketplace contract (i.e. the Resolver)', async function () {
+    it('set Coupon Distribution address within PhoenixIdentityEINMarketplace contract (i.e. the Resolver)', async function () {
       assert.ok(instances.CouponMarketplaceResolver.setCouponDistributionAddress(instances.CouponDistribution.address, { from: seller.address }))
     })
 
@@ -448,16 +448,16 @@ contract('Testing Coupon Marketplace', function (accounts) {
       let buyer = users[1]
 
       it('add buyer to IdentityRegistry', async function () {
-        await MarketplaceAPI.addToIdentityRegistry(buyer, instances.IdentityRegistry, instances.Snowflake, instances.ClientRaindrop)
+        await MarketplaceAPI.addToIdentityRegistry(buyer, instances.IdentityRegistry, instances.PhoenixIdentity, instances.ClientPhoenixAuthentication)
       })
 
-      it('add allowance for Snowflake address', async function () {
+      it('add allowance for PhoenixIdentity address', async function () {
 
         let allowance = 750;
 
         //Test if empty
-        let snowflakeDepositAmount = await instances.Snowflake.deposits(buyer.ein);
-        assert.ok(snowflakeDepositAmount.eq(new BN(0)))
+        let phoenixIdentityDepositAmount = await instances.PhoenixIdentity.deposits(buyer.ein);
+        assert.ok(phoenixIdentityDepositAmount.eq(new BN(0)))
 
         //Keep track of our balance beforehand   
         let currBal = await instances.PhoenixToken.balanceOf(buyer.address);
@@ -465,11 +465,11 @@ contract('Testing Coupon Marketplace', function (accounts) {
 
         //Add the allowance
         //  approveAndCall(address _spender, uint256 _value, bytes memory _extraData)
-        await instances.PhoenixToken.approveAndCall(instances.Snowflake.address, allowance, "0x", {from: buyer.address})
+        await instances.PhoenixToken.approveAndCall(instances.PhoenixIdentity.address, allowance, "0x", {from: buyer.address})
 
         //Test to see if allowance is there 
-        let snowflakeDepositAmountNew = await instances.Snowflake.deposits(buyer.ein);
-        assert.ok(snowflakeDepositAmountNew.eq(new BN(allowance)))
+        let phoenixIdentityDepositAmountNew = await instances.PhoenixIdentity.deposits(buyer.ein);
+        assert.ok(phoenixIdentityDepositAmountNew.eq(new BN(allowance)))
 
         //Check to see amount of Phoenix removed from our account
         let newBal = await instances.PhoenixToken.balanceOf(buyer.address);
@@ -482,11 +482,11 @@ contract('Testing Coupon Marketplace', function (accounts) {
         let resolverAllowance = 200;
 
         //Check that is empty
-        let currResolverAllowance = await instances.Snowflake.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
+        let currResolverAllowance = await instances.PhoenixIdentity.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
         assert.ok(currResolverAllowance.eq(new BN(0)))
 
         //Add resolver along with allowance
-        await instances.Snowflake.addResolver(
+        await instances.PhoenixIdentity.addResolver(
           instances.CouponMarketplaceResolver.address,
           true,
           resolverAllowance,
@@ -495,7 +495,7 @@ contract('Testing Coupon Marketplace', function (accounts) {
         )
 
         //Test resolver allowance is added
-        let newResolverAllowance = await instances.Snowflake.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
+        let newResolverAllowance = await instances.PhoenixIdentity.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
         assert.ok(newResolverAllowance.eq(new BN(resolverAllowance)))
 
 
@@ -537,8 +537,8 @@ contract('Testing Coupon Marketplace', function (accounts) {
 
  
         let itemPrice = Test.itemListings[0].price;
-        let currSnowflakeDepositAmount = await instances.Snowflake.deposits(buyer.ein);
-        let currResolverAllowance = await instances.Snowflake.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
+        let currPhoenixIdentityDepositAmount = await instances.PhoenixIdentity.deposits(buyer.ein);
+        let currResolverAllowance = await instances.PhoenixIdentity.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
 
 
 
@@ -559,11 +559,11 @@ contract('Testing Coupon Marketplace', function (accounts) {
 
 
         //Test for amount spent given
-        let postSnowflakeDepositAmount = await instances.Snowflake.deposits(buyer.ein);
-        let postResolverAllowance = await instances.Snowflake.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
+        let postPhoenixIdentityDepositAmount = await instances.PhoenixIdentity.deposits(buyer.ein);
+        let postResolverAllowance = await instances.PhoenixIdentity.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
 
         //Ensure the cost of the item has been subtracted from both of these
-        assert.ok((currSnowflakeDepositAmount.sub(postSnowflakeDepositAmount)).eq(new BN(itemPrice)))
+        assert.ok((currPhoenixIdentityDepositAmount.sub(postPhoenixIdentityDepositAmount)).eq(new BN(itemPrice)))
         assert.ok((currResolverAllowance.sub(postResolverAllowance)).eq(new BN(itemPrice)))
 
 
@@ -666,8 +666,8 @@ contract('Testing Coupon Marketplace', function (accounts) {
 
  
         let itemPrice = Test.itemListings[1].price;
-        let currSnowflakeDepositAmount = await instances.Snowflake.deposits(buyer.ein);
-        let currResolverAllowance = await instances.Snowflake.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
+        let currPhoenixIdentityDepositAmount = await instances.PhoenixIdentity.deposits(buyer.ein);
+        let currResolverAllowance = await instances.PhoenixIdentity.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
 
 
         //Assert seller's ownership over this item
@@ -694,13 +694,13 @@ contract('Testing Coupon Marketplace', function (accounts) {
 
 
         //Test for amount spent given
-        let postSnowflakeDepositAmount = await instances.Snowflake.deposits(buyer.ein);
-        let postResolverAllowance = await instances.Snowflake.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
+        let postPhoenixIdentityDepositAmount = await instances.PhoenixIdentity.deposits(buyer.ein);
+        let postResolverAllowance = await instances.PhoenixIdentity.resolverAllowances(buyer.ein,instances.CouponMarketplaceResolver.address)
 
         let discountedAmount = itemPrice - Test.availableCoupons[0].amountOff;
  
         //Assert fact that we have received the proper amount returned
-        assert.ok((currSnowflakeDepositAmount.sub(postSnowflakeDepositAmount)).eq(new BN(discountedAmount)))
+        assert.ok((currPhoenixIdentityDepositAmount.sub(postPhoenixIdentityDepositAmount)).eq(new BN(discountedAmount)))
 
       })
 

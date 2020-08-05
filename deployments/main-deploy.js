@@ -57,7 +57,7 @@ const Stage = {
   FINISH: 8
 };
 
-const snowflakeAddress = '0xB0D5a36733886a4c5597849a05B315626aF5222E';
+const phoenixIdentityAddress = '0xB0D5a36733886a4c5597849a05B315626aF5222E';
 const instances = {};
 
 let accounts;
@@ -93,17 +93,17 @@ async function run() {
       break;
 
     case Stage.ITEM_FEATURE:
-      await itemfeature(snowflakeAddress);
+      await itemfeature(phoenixIdentityAddress);
       process.exit(0);
       break;
  
     case Stage.COUPON_FEATURE: 
-      await couponfeature(snowflakeAddress);
+      await couponfeature(phoenixIdentityAddress);
       process.exit(0);
       break;
       
     case Stage.COUPON_MARKETPLACE_VIA:
-      await couponmarketplacevia(snowflakeAddress);
+      await couponmarketplacevia(phoenixIdentityAddress);
       process.exit(0);
       break;
 
@@ -121,7 +121,7 @@ async function run() {
       couponFeatureAddress = await logutil.promptExistence('CouponFeatureAddress', couponFeatureAddress);
       itemFeatureAddress = await logutil.promptExistence('ItemFeatureAddress', itemFeatureAddress);
 
-      await couponmarketplaceresolver(snowflakeAddress, seller.paymentAddress, couponMarketplaceViaAddress, couponFeatureAddress, itemFeatureAddress);
+      await couponmarketplaceresolver(phoenixIdentityAddress, seller.paymentAddress, couponMarketplaceViaAddress, couponFeatureAddress, itemFeatureAddress);
       process.exit(0);}
       break;
  
@@ -148,7 +148,7 @@ async function run() {
       );
 
       couponMarketplaceResolverAddress = await logutil.promptExistence('CouponMarketplaceResolverAddress', couponMarketplaceResolverAddress);
-      await coupondistribution(couponMarketplaceResolverAddress, snowflakeAddress);
+      await coupondistribution(couponMarketplaceResolverAddress, phoenixIdentityAddress);
       process.exit(0);}
       break;
 
@@ -170,12 +170,12 @@ async function run() {
 
 async function init() {
 
-  //Grab Snowflake contract deployed at this address
-  const SnowflakeABI = DeployUtil.extractContract(compiled, "Snowflake").abi;
-  instances.Snowflake = new web3.eth.Contract(SnowflakeABI, snowflakeAddress);
+  //Grab PhoenixIdentity contract deployed at this address
+  const PhoenixIdentityABI = DeployUtil.extractContract(compiled, "PhoenixIdentity").abi;
+  instances.PhoenixIdentity = new web3.eth.Contract(PhoenixIdentityABI, phoenixIdentityAddress);
 
   //Get IdentityRegistryAddress
-  const identityRegistryAddress = await instances.Snowflake.methods.identityRegistryAddress().call();
+  const identityRegistryAddress = await instances.PhoenixIdentity.methods.identityRegistryAddress().call();
   console.log("============================================")
   console.log(identityRegistryAddress)
 
@@ -201,11 +201,11 @@ async function init() {
   return true;
 }
 
-async function itemfeature(snowflakeAddress) {
+async function itemfeature(phoenixIdentityAddress) {
 
   let compiledItemFeature = await flattener.flattenAndCompile(path.resolve('../contracts', 'marketplace', 'features', 'ItemFeature.sol'), true);
   let deployerItemFeature = await solidityDeploy.createDeployer(web3, compiledItemFeature);
-  await deployerItemFeature.deploy("ItemFeature", [snowflakeAddress], { from: seller.address });
+  await deployerItemFeature.deploy("ItemFeature", [phoenixIdentityAddress], { from: seller.address });
   console.log("End of Stage ITEM_FEATURE")
 
   return true; 
@@ -213,33 +213,33 @@ async function itemfeature(snowflakeAddress) {
 }
 
 
-async function couponfeature(snowflakeAddress) {
+async function couponfeature(phoenixIdentityAddress) {
 
   let compiledCouponFeature = await flattener.flattenAndCompile(path.resolve('../contracts', 'marketplace', 'features', 'CouponFeature.sol'), true);
   let deployerCouponFeature = await solidityDeploy.createDeployer(web3, compiledCouponFeature);
-  await deployerCouponFeature.deploy("CouponFeature", [snowflakeAddress], { from: seller.address });
+  await deployerCouponFeature.deploy("CouponFeature", [phoenixIdentityAddress], { from: seller.address });
   console.log("End of Stage COUPON_FEATURE")
 
   return true; 
 
 }
 
-async function couponmarketplacevia(snowflakeAddress) {
+async function couponmarketplacevia(phoenixIdentityAddress) {
 
   let compiledCMV = await flattener.flattenAndCompile(path.resolve('../contracts', 'CouponMarketplaceVia.sol'), true);
   let deployerCMV = await solidityDeploy.createDeployer(web3, compiledCMV);
-  await deployerCMV.deploy("CouponMarketplaceVia", [snowflakeAddress], { from: seller.address });
+  await deployerCMV.deploy("CouponMarketplaceVia", [phoenixIdentityAddress], { from: seller.address });
   console.log("End of Stage COUPON_MARKETPLACE_VIA")
 
   return true;   
 
 }
 
-async function couponmarketplaceresolver(snowflakeAddress, paymentAddress, couponMarketplaceViaAddress, couponFeatureAddress, itemFeatureAddress) {
+async function couponmarketplaceresolver(phoenixIdentityAddress, paymentAddress, couponMarketplaceViaAddress, couponFeatureAddress, itemFeatureAddress) {
 
   let compiledCMR = await flattener.flattenAndCompile(path.resolve('../contracts/', 'resolvers', 'CouponMarketplaceResolver.sol'), true);
   let deployerCMR = await solidityDeploy.createDeployer(web3, compiledCMR);
-  await deployerCMR.deploy("CouponMarketplaceResolver", ["Coupon-Marketplace-Resolver", "A test Coupon Marketplace Resolver built on top of Phoenix Snowflake", snowflakeAddress, false, false, paymentAddress, couponMarketplaceViaAddress, couponFeatureAddress, itemFeatureAddress], { from: seller.address });
+  await deployerCMR.deploy("CouponMarketplaceResolver", ["Coupon-Marketplace-Resolver", "A test Coupon Marketplace Resolver built on top of Phoenix PhoenixIdentity", phoenixIdentityAddress, false, false, paymentAddress, couponMarketplaceViaAddress, couponFeatureAddress, itemFeatureAddress], { from: seller.address });
   console.log("End of Stage COUPON_MARKETPLACE_RESOLVER")
 
 }
@@ -253,11 +253,11 @@ async function set1(couponMarketplaceViaAddress, couponMarketplaceResolverAddres
   console.log("End of Stage SET_1");
 }
 
-async function coupondistribution(couponMarketplaceResolverAddress, snowflakeAddress) {
+async function coupondistribution(couponMarketplaceResolverAddress, phoenixIdentityAddress) {
 
   let compiledCouponDistribution = await flattener.flattenAndCompile(path.resolve('../contracts', 'marketplace', 'features', 'coupon_distribution', 'CouponDistribution.sol'), true);
   let deployerCouponDistribution = await solidityDeploy.createDeployer(web3, compiledCouponDistribution);
-  await deployerCouponDistribution.deploy("CouponDistribution", [couponMarketplaceResolverAddress, snowflakeAddress], { from: seller.address });
+  await deployerCouponDistribution.deploy("CouponDistribution", [couponMarketplaceResolverAddress, phoenixIdentityAddress], { from: seller.address });
   console.log("End of Stage COUPON_DISTRIBUTION")
 }
 

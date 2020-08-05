@@ -3,13 +3,13 @@ pragma solidity ^0.5.2;
 import "../../../zeppelin/introspection/IERC165.sol";
 
 /**
- * @title Snowflake ERC721 Non-Fungible Token Standard basic interface
+ * @title PhoenixIdentity ERC721 Non-Fungible Token Standard basic interface
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-//ISnowflakeEINERC721 vs. SnowflakeEINERC721Interface; for the sake of consistency, we will keep this probably terrible naming
-//Making it SnowflakeERC721Interface for concision
-//TODO: This will likely conflict with "ownerEIN" naming in SnowflakeEINOwnable, if we use einOwner; correct down the line
-contract SnowflakeERC721Interface is IERC165 {
+//IPhoenixIdentityEINERC721 vs. PhoenixIdentityEINERC721Interface; for the sake of consistency, we will keep this probably terrible naming
+//Making it PhoenixIdentityERC721Interface for concision
+//TODO: This will likely conflict with "ownerEIN" naming in PhoenixIdentityEINOwnable, if we use einOwner; correct down the line
+contract PhoenixIdentityERC721Interface is IERC165 {
     event Transfer(uint256 indexed einFrom, uint256 indexed einTo, uint256 indexed tokenId);
     event Approval(uint256 indexed einOwner, uint256 indexed einApproved, uint256 indexed tokenId);
     event ApprovalForAll(uint256 indexed einOwner, uint256 indexed einOperator, bool approved);

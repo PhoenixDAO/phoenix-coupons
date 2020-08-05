@@ -1,11 +1,11 @@
 pragma solidity ^0.5.2;
 
 /**
- * @title Snowflake ERC721 token receiver interface
+ * @title PhoenixIdentity ERC721 token receiver interface
  * @dev Interface for any contract that wants to support safeTransfers
- * from Snowflake ERC721 asset contracts.
+ * from PhoenixIdentity ERC721 asset contracts.
  */
-contract SnowflakeERC721ReceiverInterface {
+contract PhoenixIdentityERC721ReceiverInterface {
     /**
      * @notice Handle the receipt of an NFT
      * @dev The ERC721 smart contract calls this function on the recipient

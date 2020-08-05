@@ -1,12 +1,12 @@
 pragma solidity ^0.5.0;
 
-import "./SnowflakeVia.sol";
-import "./interfaces/SnowflakeResolverInterface.sol";
+import "./PhoenixIdentityVia.sol";
+import "./interfaces/PhoenixIdentityResolverInterface.sol";
 import "./zeppelin/math/SafeMath.sol";
 import "./interfaces/CouponMarketplaceResolverInterface.sol";
-import "./interfaces/SnowflakeInterface.sol";
+import "./interfaces/PhoenixIdentityInterface.sol";
 import "./resolvers/CouponMarketplaceResolver.sol";
-import "./ein/util/SnowflakeEINOwnable.sol";
+import "./ein/util/PhoenixIdentityEINOwnable.sol";
 import "./interfaces/PhoenixInterface.sol";
 
 import "./interfaces/marketplace/CouponInterface.sol";
@@ -16,7 +16,7 @@ import "./marketplace/features/CouponFeature.sol";
 import "./marketplace/features/ItemFeature.sol";
 
 
-contract CouponMarketplaceVia is SnowflakeVia, SnowflakeEINOwnable {
+contract CouponMarketplaceVia is PhoenixIdentityVia, PhoenixIdentityEINOwnable {
 
 
     //We may need to define this in a seperate file... uncertain if this will quite work being in two different locations
@@ -28,29 +28,29 @@ contract CouponMarketplaceVia is SnowflakeVia, SnowflakeEINOwnable {
 
     address public CouponMarketplaceResolverAddress;
 
-    constructor(address _snowflakeAddress) SnowflakeVia(_snowflakeAddress) public {
+    constructor(address _phoenixIdentityAddress) PhoenixIdentityVia(_phoenixIdentityAddress) public {
         //Constructing parents
-        _constructSnowflakeEINOwnable(_snowflakeAddress);
+        _constructPhoenixIdentityEINOwnable(_phoenixIdentityAddress);
  
         //Regular constructor
-        //setSnowflakeAddress(_snowflakeAddress);
+        //setPhoenixIdentityAddress(_phoenixIdentityAddress);
         
     }
 
     // end recipient is an EIN
-    function snowflakeCall(
+    function phoenixIdentityCall(
         address /* resolver */,
         uint /* einFrom */,
         uint /* einTo */,
         uint /* amount */,
-        bytes memory snowflakeCallBytes 
-    ) public senderIsSnowflake {
+        bytes memory phoenixIdentityCallBytes 
+    ) public senderIsPhoenixIdentity {
 
 
-//        (bool success, bytes memory returnData) = address(this).call(snowflakeCallBytes);
-//        require(success, ".call() to snowflakeCallBytes failed!");
+//        (bool success, bytes memory returnData) = address(this).call(phoenixIdentityCallBytes);
+//        require(success, ".call() to phoenixIdentityCallBytes failed!");
 
-        (/*bytes4 selector, */uint itemID, uint einBuyer, uint einSeller, uint amount, uint couponID) = abi.decode(snowflakeCallBytes, (/*bytes4, */uint256, uint256, uint256, uint256, uint256));
+        (/*bytes4 selector, */uint itemID, uint einBuyer, uint einSeller, uint amount, uint couponID) = abi.decode(phoenixIdentityCallBytes, (/*bytes4, */uint256, uint256, uint256, uint256, uint256));
         processTransaction(itemID, einBuyer, einSeller, amount, couponID);
         
 
@@ -60,15 +60,15 @@ contract CouponMarketplaceVia is SnowflakeVia, SnowflakeEINOwnable {
     //Name of this function is perhaps a little misleading, since amount has already been transferred, we're just calcing coupon here
     //TODO: Should we have the NeoCouponMarketplaceResolverAddress exist, or just take the address resolver passed here? Completely forgot we were give this, and now this param is being unused
     //***NOTE***: Removed modifier for testing purposes; very dangerous!!!
-    function processTransaction(/*address resolver, */uint itemID, uint einBuyer, uint einSeller, uint amount, uint couponID) internal /*senderIsSnowflake*/ returns (bool) {
+    function processTransaction(/*address resolver, */uint itemID, uint einBuyer, uint einSeller, uint amount, uint couponID) internal /*senderIsPhoenixIdentity*/ returns (bool) {
 
         //Initialize NeoCouponMarketplaceResolverAddress
         CouponMarketplaceResolver mktResolver = CouponMarketplaceResolver(CouponMarketplaceResolverAddress);
  
         ItemFeature itemFeature = ItemFeature(mktResolver.ItemFeatureAddress());
  
-        //Initialize Snowflake
-        SnowflakeInterface snowflake = SnowflakeInterface(snowflakeAddress);
+        //Initialize PhoenixIdentity
+        PhoenixIdentityInterface phoenixIdentity = PhoenixIdentityInterface(phoenixIdentityAddress);
 
         //Declare our total
         uint total = amount;
@@ -88,23 +88,23 @@ contract CouponMarketplaceVia is SnowflakeVia, SnowflakeEINOwnable {
             itemFeature.transferFromAddress(einSeller, einBuyer, itemID);
 
             //Send to seller payment address
-            PhoenixInterface phoenix = PhoenixInterface(snowflake.phoenixTokenAddress());
+            PhoenixInterface phoenix = PhoenixInterface(phoenixIdentity.phoenixTokenAddress());
             phoenix.transfer(mktResolver.paymentAddress(), total);     
  
             //Finally, let's return their amount... (for security reasons, we follow Checks-Effect-Interaction pattern and modify state last...)
-            //This will result in a SnowflakeDeposit; see receiveApproval() of Snowflake contract
-            phoenix.approveAndCall(snowflakeAddress, amountRefund, abi.encode(einBuyer));
+            //This will result in a PhoenixIdentityDeposit; see receiveApproval() of PhoenixIdentity contract
+            phoenix.approveAndCall(phoenixIdentityAddress, amountRefund, abi.encode(einBuyer));
 
         } else {
 
             //Send item to buyer
             itemFeature.transferFromAddress(einSeller, einBuyer, itemID);
 
-            //Send our total charged to buyer addr via snowflake
-//            snowflake.transferSnowflakeBalance(einSeller, total);
+            //Send our total charged to buyer addr via phoenixIdentity
+//            phoenixIdentity.transferPhoenixIdentityBalance(einSeller, total);
             
             //We will send it to the seller payment address, actually...
-            PhoenixInterface phoenix = PhoenixInterface(snowflake.phoenixTokenAddress());
+            PhoenixInterface phoenix = PhoenixInterface(phoenixIdentity.phoenixTokenAddress());
             phoenix.transfer(mktResolver.paymentAddress(), total);
             
             //Actually, I think the Resolver has PHOENIX sent to address directly to this contract, so it may just be a regular send, check later
@@ -151,33 +151,33 @@ contract CouponMarketplaceVia is SnowflakeVia, SnowflakeEINOwnable {
     }
 
     // end recipient is an EIN, no from field
-    function snowflakeCall(
+    function phoenixIdentityCall(
         address /* resolver */,
         uint /* einTo */,
         uint /* amount */,
-        bytes memory /* snowflakeCallBytes */
-    ) public senderIsSnowflake {
+        bytes memory /* phoenixIdentityCallBytes */
+    ) public senderIsPhoenixIdentity {
         revert("Not Implemented.");
     }
 
     // end recipient is an address
-    function snowflakeCall(
+    function phoenixIdentityCall(
         address /* resolver */,
         uint /* einFrom */,
         address payable /* to */,
         uint /* amount */,
-        bytes memory /* snowflakeCallBytes */
-    ) public senderIsSnowflake {
+        bytes memory /* phoenixIdentityCallBytes */
+    ) public senderIsPhoenixIdentity {
         revert("Not Implemented.");
     }
 
     // end recipient is an address, no from field
-    function snowflakeCall(
+    function phoenixIdentityCall(
         address /* resolver */,
         address payable /* to */,
         uint /* amount */,
-        bytes memory /* snowflakeCallBytes */
-    ) public senderIsSnowflake {
+        bytes memory /* phoenixIdentityCallBytes */
+    ) public senderIsPhoenixIdentity {
         revert("Not Implemented.");
     }
 

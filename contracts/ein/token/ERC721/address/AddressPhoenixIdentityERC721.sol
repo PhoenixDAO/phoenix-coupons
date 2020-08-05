@@ -1,24 +1,24 @@
 pragma solidity ^0.5.2;
 
-import "../SnowflakeERC721.sol";
+import "../PhoenixIdentityERC721.sol";
 
 /**
- * @title Address Snowflake ERC721; Non-Fungible Token Standard basic implementation, but with address owning
+ * @title Address PhoenixIdentity ERC721; Non-Fungible Token Standard basic implementation, but with address owning
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-contract AddressSnowflakeERC721 is SnowflakeERC721 {
+contract AddressPhoenixIdentityERC721 is PhoenixIdentityERC721 {
 
 
 
     // Mapping from token ID to approved address
     mapping (uint256 => address) private _tokenApprovalsAddress;
 
-/*    constructor (address _snowflakeAddress) public {
-        _constructAddressSnowflakeERC721(_snowflakeAddress);
+/*    constructor (address _phoenixIdentityAddress) public {
+        _constructAddressPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 */
-    function _constructAddressSnowflakeERC721(address _snowflakeAddress) internal {
-        _constructSnowflakeERC721(_snowflakeAddress);
+    function _constructAddressPhoenixIdentityERC721(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 
 
@@ -181,7 +181,7 @@ contract AddressSnowflakeERC721 is SnowflakeERC721 {
             return true;
         }
 
-        bytes4 retval = SnowflakeERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
+        bytes4 retval = PhoenixIdentityERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
         return (retval == _ERC721_RECEIVED);
     }
 */

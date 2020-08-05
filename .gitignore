@@ -5,3 +5,6 @@ config
 *.env
 *config.js
 !sample-config.js
+build
+package-lock.json
+

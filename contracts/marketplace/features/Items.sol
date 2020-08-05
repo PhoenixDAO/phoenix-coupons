@@ -1,9 +1,9 @@
 pragma solidity ^0.5.0;
 
-import '../../ein/token/ERC721/SnowflakeERC721.sol';
-import '../../ein/token/ERC721/SnowflakeERC721Burnable.sol';
-import '../../ein/token/ERC721/SnowflakeERC721Mintable.sol';
-import '../../ein/token/ERC721/address/AddressSnowflakeERC721.sol';
+import '../../ein/token/ERC721/PhoenixIdentityERC721.sol';
+import '../../ein/token/ERC721/PhoenixIdentityERC721Burnable.sol';
+import '../../ein/token/ERC721/PhoenixIdentityERC721Mintable.sol';
+import '../../ein/token/ERC721/address/AddressPhoenixIdentityERC721.sol';
 import '../../interfaces/marketplace/ItemInterface.sol';
 
 /*
@@ -17,7 +17,7 @@ ERC 721 ---> Coupon Interface ---> Coupon contract (w/ data + function implement
 */
 
 
-contract Items is SnowflakeERC721, SnowflakeERC721Burnable, SnowflakeERC721Mintable, AddressSnowflakeERC721, ItemInterface {
+contract Items is PhoenixIdentityERC721, PhoenixIdentityERC721Burnable, PhoenixIdentityERC721Mintable, AddressPhoenixIdentityERC721, ItemInterface {
 
     //ID, starting at 1
     uint public nextItemListingsID;
@@ -25,16 +25,16 @@ contract Items is SnowflakeERC721, SnowflakeERC721Burnable, SnowflakeERC721Minta
     //Mapping connecting ERC721 items to actual struct objects
     mapping(uint => Item) public itemListings;
 /*
-    constructor(address _snowflakeAddress) public {
-        _constructItems(_snowflakeAddress);
+    constructor(address _phoenixIdentityAddress) public {
+        _constructItems(_phoenixIdentityAddress);
     }
 */
-    function _constructItems(address _snowflakeAddress) internal {
+    function _constructItems(address _phoenixIdentityAddress) internal {
 
-        _constructSnowflakeERC721(_snowflakeAddress);
-        _constructSnowflakeERC721Burnable(_snowflakeAddress);
-        _constructSnowflakeERC721Mintable(_snowflakeAddress);
-        _constructAddressSnowflakeERC721(_snowflakeAddress);
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
+        _constructPhoenixIdentityERC721Burnable(_phoenixIdentityAddress);
+        _constructPhoenixIdentityERC721Mintable(_phoenixIdentityAddress);
+        _constructAddressPhoenixIdentityERC721(_phoenixIdentityAddress);
 
         //Actual Item constructing
         nextItemListingsID = 1;

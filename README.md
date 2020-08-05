@@ -1,11 +1,11 @@
-# Phoenix Snowflake - Marketplace Coupons
+# Phoenix PhoenixIdentity - Marketplace Coupons
 
 ## Introduction
-Snowflake is an [ERC-1484 `Provider`](https://erc1484.org/) that provides on-/off-chain identity management. For more details
+PhoenixIdentity is an [ERC-1484 `Provider`](https://erc1484.org/) that provides on-/off-chain identity management. For more details
 
-This project is essentially a chain of smart contracts built on top of the Phoenix Snowflake protocol, aiming to provide a marketplace platform for sellers to launch their own stores and sell to users. Coupons are also featured, allowing users to use globally defined coupons guaranteed to expire within a certain time period, or assigning coupons per Snowflake EIN, manageable via multiple addresses.
+This project is essentially a chain of smart contracts built on top of the Phoenix PhoenixIdentity protocol, aiming to provide a marketplace platform for sellers to launch their own stores and sell to users. Coupons are also featured, allowing users to use globally defined coupons guaranteed to expire within a certain time period, or assigning coupons per PhoenixIdentity EIN, manageable via multiple addresses.
 
-The marketplace itself is a Snowflake Resolver contract, which interacts with a Snowflake Via contract to handle the transaction (and thus coupon discount) logic. 
+The marketplace itself is a PhoenixIdentity Resolver contract, which interacts with a PhoenixIdentity Via contract to handle the transaction (and thus coupon discount) logic. 
 
 This project is still under development, and dramatic changes will likely occur quickly. The full scope of the prospective completed project 
 

@@ -46,11 +46,11 @@ class MarketplaceAPI {
   
   //Convenience function, assumes instances is set with loaded contracts
 /*  async addToIdentityRegistrySimple(userIdentity) {
-    await this.addToIdentityRegistry(userIdentity, instances.IdentityRegistry, instances.Snowflake, instances.ClientRaindrop)
+    await this.addToIdentityRegistry(userIdentity, instances.IdentityRegistry, instances.PhoenixIdentity, instances.ClientPhoenixAuthentication)
   }*/
 
   //"Lower-level" convenience function
-  /*static*/ async addToIdentityRegistry(userIdentity, IdentityRegistryInstance, SnowflakeInstance, ClientRaindropInstance){
+  /*static*/ async addToIdentityRegistry(userIdentity, IdentityRegistryInstance, PhoenixIdentityInstance, ClientPhoenixAuthenticationInstance){
 
     const timestamp = Math.round(new Date() / 1000) - 1
     const permissionString = web3.utils.soliditySha3(
@@ -58,14 +58,14 @@ class MarketplaceAPI {
       'I authorize the creation of an Identity on my behalf.',
       userIdentity.recoveryAddress,
       userIdentity.address,
-      { t: 'address[]', v: [SnowflakeInstance.address] },
+      { t: 'address[]', v: [PhoenixIdentityInstance.address] },
       { t: 'address[]', v: [] },
       timestamp
     )
 
     const permission = await sign(permissionString, userIdentity.address, userIdentity.private)
 
-    await SnowflakeInstance.createIdentityDelegated(
+    await PhoenixIdentityInstance.createIdentityDelegated(
       userIdentity.recoveryAddress, userIdentity.address, [], userIdentity.phoenixID, permission.v, permission.r, permission.s, timestamp
     )
     //console.log("EIN:    " + userIdentity.ein)
@@ -74,8 +74,8 @@ class MarketplaceAPI {
     await verifyIdentity(userIdentity.identity, IdentityRegistryInstance, {
       recoveryAddress:     userIdentity.recoveryAddress,
       associatedAddresses: [userIdentity.address],
-      providers:           [SnowflakeInstance.address],
-      resolvers:           [ClientRaindropInstance.address]
+      providers:           [PhoenixIdentityInstance.address],
+      resolvers:           [ClientPhoenixAuthenticationInstance.address]
    })
 
   }

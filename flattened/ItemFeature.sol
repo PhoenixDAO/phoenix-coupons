@@ -17,7 +17,7 @@ contract EINOwnable {
     );
 
     /**
-    * @dev The SnowflakeEINOwnable constructor sets the original `owner` of the contract to the sender
+    * @dev The PhoenixIdentityEINOwnable constructor sets the original `owner` of the contract to the sender
     * account.
     */
 /*    constructor(uint ein) public {
@@ -82,20 +82,20 @@ contract EINOwnable {
     }
 }
 
-// File: contracts/interfaces/SnowflakeInterface.sol
+// File: contracts/interfaces/PhoenixIdentityInterface.sol
 
 pragma solidity ^0.5.0;
 
-interface SnowflakeInterface {
+interface PhoenixIdentityInterface {
     function deposits(uint) external view returns (uint);
     function resolverAllowances(uint, address) external view returns (uint);
 
     function identityRegistryAddress() external returns (address);
     function phoenixTokenAddress() external returns (address);
-    function clientRaindropAddress() external returns (address);
+    function clientPhoenixAuthenticationAddress() external returns (address);
 
     function setAddresses(address _identityRegistryAddress, address _phoenixTokenAddress) external;
-    function setClientRaindropAddress(address _clientRaindropAddress) external;
+    function setClientPhoenixAuthenticationAddress(address _clientPhoenixAuthenticationAddress) external;
 
     function createIdentityDelegated(
         address recoveryAddress, address associatedAddress, address[] calldata providers, string calldata casedPhoenixId,
@@ -111,12 +111,12 @@ interface SnowflakeInterface {
         address approvingAddress, address[] calldata newProviders, address[] calldata oldProviders,
         uint8[2] calldata v, bytes32[2] calldata r, bytes32[2] calldata s, uint[2] calldata timestamp
     ) external;
-    function addResolver(address resolver, bool isSnowflake, uint withdrawAllowance, bytes calldata extraData) external;
+    function addResolver(address resolver, bool isPhoenixIdentity, uint withdrawAllowance, bytes calldata extraData) external;
     function addResolverAsProvider(
-        uint ein, address resolver, bool isSnowflake, uint withdrawAllowance, bytes calldata extraData
+        uint ein, address resolver, bool isPhoenixIdentity, uint withdrawAllowance, bytes calldata extraData
     ) external;
     function addResolverFor(
-        address approvingAddress, address resolver, bool isSnowflake, uint withdrawAllowance, bytes calldata extraData,
+        address approvingAddress, address resolver, bool isPhoenixIdentity, uint withdrawAllowance, bytes calldata extraData,
         uint8 v, bytes32 r, bytes32 s, uint timestamp
     ) external;
     function changeResolverAllowances(address[] calldata resolvers, uint[] calldata withdrawAllowances) external;
@@ -124,9 +124,9 @@ interface SnowflakeInterface {
         address approvingAddress, address[] calldata resolvers, uint[] calldata withdrawAllowances,
         uint8 v, bytes32 r, bytes32 s
     ) external;
-    function removeResolver(address resolver, bool isSnowflake, bytes calldata extraData) external;
+    function removeResolver(address resolver, bool isPhoenixIdentity, bytes calldata extraData) external;
     function removeResolverFor(
-        address approvingAddress, address resolver, bool isSnowflake, bytes calldata extraData,
+        address approvingAddress, address resolver, bool isPhoenixIdentity, bytes calldata extraData,
         uint8 v, bytes32 r, bytes32 s, uint timestamp
     ) external;
 
@@ -134,13 +134,13 @@ interface SnowflakeInterface {
         address approvingAddress, address newRecoveryAddress, uint8 v, bytes32 r, bytes32 s
     ) external;
 
-    function transferSnowflakeBalance(uint einTo, uint amount) external;
-    function withdrawSnowflakeBalance(address to, uint amount) external;
-    function transferSnowflakeBalanceFrom(uint einFrom, uint einTo, uint amount) external;
-    function withdrawSnowflakeBalanceFrom(uint einFrom, address to, uint amount) external;
-    function transferSnowflakeBalanceFromVia(uint einFrom, address via, uint einTo, uint amount, bytes calldata _bytes)
+    function transferPhoenixIdentityBalance(uint einTo, uint amount) external;
+    function withdrawPhoenixIdentityBalance(address to, uint amount) external;
+    function transferPhoenixIdentityBalanceFrom(uint einFrom, uint einTo, uint amount) external;
+    function withdrawPhoenixIdentityBalanceFrom(uint einFrom, address to, uint amount) external;
+    function transferPhoenixIdentityBalanceFromVia(uint einFrom, address via, uint einTo, uint amount, bytes calldata _bytes)
         external;
-    function withdrawSnowflakeBalanceFromVia(uint einFrom, address via, address to, uint amount, bytes calldata _bytes)
+    function withdrawPhoenixIdentityBalanceFromVia(uint einFrom, address via, address to, uint amount, bytes calldata _bytes)
         external;
 }
 
@@ -200,32 +200,32 @@ interface IdentityRegistryInterface {
     ) external;
 }
 
-// File: contracts/snowflake_custom/SnowflakeReader.sol
+// File: contracts/phoenixIdentity_custom/PhoenixIdentityReader.sol
 
 pragma solidity ^0.5.0;
 
 
 
 /**
-* @title SnowflakeReader
+* @title PhoenixIdentityReader
 * @dev Intended to provide a simple thing for contracts to extend and do things such as read EINs. For now, this is its only function, but this is needed for design purposes, IMO
 *
 */
-contract SnowflakeReader {
-    address public snowflakeAddress;
+contract PhoenixIdentityReader {
+    address public phoenixIdentityAddress;
 
-/*    constructor(address _snowflakeAddress) public {
-        _constructSnowflakeReader(_snowflakeAddress);
+/*    constructor(address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityReader(_phoenixIdentityAddress);
     }
 */
     //Function to avoid double-constructor in inheriting, sort of a work-around
-    function _constructSnowflakeReader(address _snowflakeAddress) internal {
-        snowflakeAddress = _snowflakeAddress;
+    function _constructPhoenixIdentityReader(address _phoenixIdentityAddress) internal {
+        phoenixIdentityAddress = _phoenixIdentityAddress;
     }
 
     function getEIN(address einAddress) internal returns (uint256 ein) {
-        //Grab an instance of IdentityRegistry to work with as defined in Snowflake
-        SnowflakeInterface si = SnowflakeInterface(snowflakeAddress);
+        //Grab an instance of IdentityRegistry to work with as defined in PhoenixIdentity
+        PhoenixIdentityInterface si = PhoenixIdentityInterface(phoenixIdentityAddress);
         address iAdd = si.identityRegistryAddress();
 
         IdentityRegistryInterface identityRegistry = IdentityRegistryInterface(iAdd);
@@ -238,31 +238,31 @@ contract SnowflakeReader {
 
 }
 
-// File: contracts/ein/util/SnowflakeEINOwnable.sol
+// File: contracts/ein/util/PhoenixIdentityEINOwnable.sol
 
 pragma solidity ^0.5.0;
 
 
 
 /**
-* @title SnowflakeEINOwnable
-* @dev The SnowflakeEINOwnable contract has an owner EIN, and provides basic authorization control
+* @title PhoenixIdentityEINOwnable
+* @dev The PhoenixIdentityEINOwnable contract has an owner EIN, and provides basic authorization control
 * functions, this simplifies the implementation of "user permissions".
 *
-* This extends the EINOwnable contract and provides the EIN authentication used through Snowflake (uses the abstraction Snowflake provides; the minor disadvantage is that this is indirectly connected to the IdentityRegistry, but could arugably be good design)
+* This extends the EINOwnable contract and provides the EIN authentication used through PhoenixIdentity (uses the abstraction PhoenixIdentity provides; the minor disadvantage is that this is indirectly connected to the IdentityRegistry, but could arugably be good design)
 */
-contract SnowflakeEINOwnable is EINOwnable, SnowflakeReader {
+contract PhoenixIdentityEINOwnable is EINOwnable, PhoenixIdentityReader {
 
     /**
-    * @dev The SnowflakeEINOwnable constructor sets the original `owner` of the contract to the sender
+    * @dev The PhoenixIdentityEINOwnable constructor sets the original `owner` of the contract to the sender
     * account.
     */
-/*    constructor(address _snowflakeAddress) public {
-        _constructSnowflakeEINOwnable(_snowflakeAddress);
+/*    constructor(address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityEINOwnable(_phoenixIdentityAddress);
     }
 */
-    function _constructSnowflakeEINOwnable(address _snowflakeAddress) internal {
-       _constructSnowflakeReader(_snowflakeAddress);       
+    function _constructPhoenixIdentityEINOwnable(address _phoenixIdentityAddress) internal {
+       _constructPhoenixIdentityReader(_phoenixIdentityAddress);       
        _constructEINOwnable(constructorEINOwnable(msg.sender));
     }
 
@@ -307,19 +307,19 @@ interface IERC165 {
     function supportsInterface(bytes4 interfaceId) external view returns (bool);
 }
 
-// File: contracts/ein/token/ERC721/SnowflakeERC721Interface.sol
+// File: contracts/ein/token/ERC721/PhoenixIdentityERC721Interface.sol
 
 pragma solidity ^0.5.2;
 
 
 /**
- * @title Snowflake ERC721 Non-Fungible Token Standard basic interface
+ * @title PhoenixIdentity ERC721 Non-Fungible Token Standard basic interface
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-//ISnowflakeEINERC721 vs. SnowflakeEINERC721Interface; for the sake of consistency, we will keep this probably terrible naming
-//Making it SnowflakeERC721Interface for concision
-//TODO: This will likely conflict with "ownerEIN" naming in SnowflakeEINOwnable, if we use einOwner; correct down the line
-contract SnowflakeERC721Interface is IERC165 {
+//IPhoenixIdentityEINERC721 vs. PhoenixIdentityEINERC721Interface; for the sake of consistency, we will keep this probably terrible naming
+//Making it PhoenixIdentityERC721Interface for concision
+//TODO: This will likely conflict with "ownerEIN" naming in PhoenixIdentityEINOwnable, if we use einOwner; correct down the line
+contract PhoenixIdentityERC721Interface is IERC165 {
     event Transfer(uint256 indexed einFrom, uint256 indexed einTo, uint256 indexed tokenId);
     event Approval(uint256 indexed einOwner, uint256 indexed einApproved, uint256 indexed tokenId);
     event ApprovalForAll(uint256 indexed einOwner, uint256 indexed einOperator, bool approved);
@@ -339,16 +339,16 @@ contract SnowflakeERC721Interface is IERC165 {
     function safeTransferFrom(uint256 einFrom, uint256 einTo, uint256 tokenId, bytes memory data) public;
 }
 
-// File: contracts/ein/token/ERC721/SnowflakeERC721ReceiverInterface.sol
+// File: contracts/ein/token/ERC721/PhoenixIdentityERC721ReceiverInterface.sol
 
 pragma solidity ^0.5.2;
 
 /**
- * @title Snowflake ERC721 token receiver interface
+ * @title PhoenixIdentity ERC721 token receiver interface
  * @dev Interface for any contract that wants to support safeTransfers
- * from Snowflake ERC721 asset contracts.
+ * from PhoenixIdentity ERC721 asset contracts.
  */
-contract SnowflakeERC721ReceiverInterface {
+contract PhoenixIdentityERC721ReceiverInterface {
     /**
      * @notice Handle the receipt of an NFT
      * @dev The ERC721 smart contract calls this function on the recipient
@@ -520,7 +520,7 @@ contract ERC165 is IERC165 {
     }
 }
 
-// File: contracts/ein/token/ERC721/SnowflakeERC721.sol
+// File: contracts/ein/token/ERC721/PhoenixIdentityERC721.sol
 
 pragma solidity ^0.5.2;
 
@@ -531,10 +531,10 @@ pragma solidity ^0.5.2;
 
 
 /**
- * @title Snowflake ERC721 Non-Fungible Token Standard basic implementation
+ * @title PhoenixIdentity ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
+contract PhoenixIdentityERC721 is ERC165, PhoenixIdentityERC721Interface, PhoenixIdentityReader {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
 
@@ -573,12 +573,12 @@ contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
      *  =========================================== END OF EVAL
      */
 /*
-    constructor (address _snowflakeAddress) public {
-        _constructSnowflakeERC721(_snowflakeAddress);
+    constructor (address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 */
-    function _constructSnowflakeERC721(address _snowflakeAddress) internal {
-        _constructSnowflakeReader(_snowflakeAddress);
+    function _constructPhoenixIdentityERC721(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityReader(_phoenixIdentityAddress);
 
          // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721);       
@@ -805,7 +805,7 @@ contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
             return true;
         }
 */
-        bytes4 retval = SnowflakeERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
+        bytes4 retval = PhoenixIdentityERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
         return (retval == _ERC721_RECEIVED);
     }
 
@@ -820,28 +820,28 @@ contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
     }
 }
 
-// File: contracts/ein/token/ERC721/SnowflakeERC721Burnable.sol
+// File: contracts/ein/token/ERC721/PhoenixIdentityERC721Burnable.sol
 
 pragma solidity ^0.5.2;
 
 
 /**
- * @title Snowflake ERC721 Burnable Token
- * @dev Snowflake ERC721 Token that can be irreversibly burned (destroyed).
+ * @title PhoenixIdentity ERC721 Burnable Token
+ * @dev PhoenixIdentity ERC721 Token that can be irreversibly burned (destroyed).
  */
-contract SnowflakeERC721Burnable is SnowflakeERC721 {
+contract PhoenixIdentityERC721Burnable is PhoenixIdentityERC721 {
 /*
-    constructor(address _snowflakeAddress) public {
-        _constructSnowflakeERC721Burnable(_snowflakeAddress);
+    constructor(address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityERC721Burnable(_phoenixIdentityAddress);
     }
   */
-    function _constructSnowflakeERC721Burnable(address _snowflakeAddress) internal {
-        _constructSnowflakeERC721(_snowflakeAddress);
+    function _constructPhoenixIdentityERC721Burnable(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 
     /**
-     * @dev Burns a specific Snowflake ERC721 token.
-     * @param tokenId uint256 id of the Snowflake ERC721 token to be burned.
+     * @dev Burns a specific PhoenixIdentity ERC721 token.
+     * @param tokenId uint256 id of the PhoenixIdentity ERC721 token to be burned.
      */
     function burn(uint256 tokenId) public {
         require(_isApprovedOrOwner(getEIN(msg.sender), tokenId));
@@ -892,7 +892,7 @@ library EINRoles {
     }
 }
 
-// File: contracts/ein/access/roles/SnowflakeMinterRole.sol
+// File: contracts/ein/access/roles/PhoenixIdentityMinterRole.sol
 
 pragma solidity ^0.5.2;
 
@@ -901,76 +901,76 @@ pragma solidity ^0.5.2;
 
 /*
  * =========================
- * NOTE ABOUT THIS CONTRACT: This is a more of a "SnowflakeMinterRole" contract
+ * NOTE ABOUT THIS CONTRACT: This is a more of a "PhoenixIdentityMinterRole" contract
  * =========================
  */
 
-contract SnowflakeMinterRole is SnowflakeReader {
+contract PhoenixIdentityMinterRole is PhoenixIdentityReader {
     using EINRoles for EINRoles.EINRole;
 
-    event SnowflakeMinterAdded(uint256 indexed account);
-    event SnowflakeMinterRemoved(uint256 indexed account);
+    event PhoenixIdentityMinterAdded(uint256 indexed account);
+    event PhoenixIdentityMinterRemoved(uint256 indexed account);
 
     EINRoles.EINRole private _einMinters;
 
     //TODO: Merge in msg.sender idea somehow in a good way; Identity Registry link, perhaps?
 /*
-    constructor (address _snowflakeAddress) public {
-        _constructSnowflakeMinterRole(_snowflakeAddress);
+    constructor (address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityMinterRole(_phoenixIdentityAddress);
     }
 */
-    function _constructSnowflakeMinterRole(address _snowflakeAddress) internal {
-        _constructSnowflakeReader(_snowflakeAddress);
-        _addSnowflakeMinter(getEIN(msg.sender));
+    function _constructPhoenixIdentityMinterRole(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityReader(_phoenixIdentityAddress);
+        _addPhoenixIdentityMinter(getEIN(msg.sender));
     }
 
-    modifier onlySnowflakeMinter() {
-        require(isSnowflakeMinter(getEIN(msg.sender)));
+    modifier onlyPhoenixIdentityMinter() {
+        require(isPhoenixIdentityMinter(getEIN(msg.sender)));
         _;
     }
 
-    function isSnowflakeMinter(uint256 account) public view returns (bool) {
+    function isPhoenixIdentityMinter(uint256 account) public view returns (bool) {
         return _einMinters.has(account);
     }
 
-    function addSnowflakeMinter(uint256 account) public onlySnowflakeMinter {
-        _addSnowflakeMinter(account);
+    function addPhoenixIdentityMinter(uint256 account) public onlyPhoenixIdentityMinter {
+        _addPhoenixIdentityMinter(account);
     }
 
-    function renounceSnowflakeMinter() public {
-        _removeSnowflakeMinter(getEIN(msg.sender));
+    function renouncePhoenixIdentityMinter() public {
+        _removePhoenixIdentityMinter(getEIN(msg.sender));
     }
 
-    function _addSnowflakeMinter(uint256 account) internal {
+    function _addPhoenixIdentityMinter(uint256 account) internal {
         _einMinters.add(account);
-        emit SnowflakeMinterAdded(account);
+        emit PhoenixIdentityMinterAdded(account);
     }
 
-    function _removeSnowflakeMinter(uint256 account) internal {
+    function _removePhoenixIdentityMinter(uint256 account) internal {
         _einMinters.remove(account);
-        emit SnowflakeMinterRemoved(account);
+        emit PhoenixIdentityMinterRemoved(account);
     }
 }
 
-// File: contracts/ein/token/ERC721/SnowflakeERC721Mintable.sol
+// File: contracts/ein/token/ERC721/PhoenixIdentityERC721Mintable.sol
 
 pragma solidity ^0.5.2;
 
 
 
 /**
- * @title SnowflakeERC721Mintable
- * @dev Snowflake ERC721 minting logic
+ * @title PhoenixIdentityERC721Mintable
+ * @dev PhoenixIdentity ERC721 minting logic
  */
-contract SnowflakeERC721Mintable is SnowflakeERC721, SnowflakeMinterRole {
+contract PhoenixIdentityERC721Mintable is PhoenixIdentityERC721, PhoenixIdentityMinterRole {
 
-/*    constructor (address _snowflakeAddress) public {
-        _constructSnowflakeERC721Mintable(_snowflakeAddress);
+/*    constructor (address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityERC721Mintable(_phoenixIdentityAddress);
     }
 */
-    function _constructSnowflakeERC721Mintable(address _snowflakeAddress) internal {
-        _constructSnowflakeERC721(_snowflakeAddress);
-        _constructSnowflakeMinterRole(_snowflakeAddress);
+    function _constructPhoenixIdentityERC721Mintable(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
+        _constructPhoenixIdentityMinterRole(_phoenixIdentityAddress);
     }
 
     /**
@@ -979,34 +979,34 @@ contract SnowflakeERC721Mintable is SnowflakeERC721, SnowflakeMinterRole {
      * @param tokenId The token id to mint.
      * @return A boolean that indicates if the operation was successful.
      */
-    function mint(uint256 to, uint256 tokenId) public onlySnowflakeMinter returns (bool) {
+    function mint(uint256 to, uint256 tokenId) public onlyPhoenixIdentityMinter returns (bool) {
         _mint(to, tokenId);
         return true;
     }
 }
 
-// File: contracts/ein/token/ERC721/address/AddressSnowflakeERC721.sol
+// File: contracts/ein/token/ERC721/address/AddressPhoenixIdentityERC721.sol
 
 pragma solidity ^0.5.2;
 
 
 /**
- * @title Address Snowflake ERC721; Non-Fungible Token Standard basic implementation, but with address owning
+ * @title Address PhoenixIdentity ERC721; Non-Fungible Token Standard basic implementation, but with address owning
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-contract AddressSnowflakeERC721 is SnowflakeERC721 {
+contract AddressPhoenixIdentityERC721 is PhoenixIdentityERC721 {
 
 
 
     // Mapping from token ID to approved address
     mapping (uint256 => address) private _tokenApprovalsAddress;
 
-/*    constructor (address _snowflakeAddress) public {
-        _constructAddressSnowflakeERC721(_snowflakeAddress);
+/*    constructor (address _phoenixIdentityAddress) public {
+        _constructAddressPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 */
-    function _constructAddressSnowflakeERC721(address _snowflakeAddress) internal {
-        _constructSnowflakeERC721(_snowflakeAddress);
+    function _constructAddressPhoenixIdentityERC721(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 
 
@@ -1169,7 +1169,7 @@ contract AddressSnowflakeERC721 is SnowflakeERC721 {
             return true;
         }
 
-        bytes4 retval = SnowflakeERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
+        bytes4 retval = PhoenixIdentityERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
         return (retval == _ERC721_RECEIVED);
     }
 */
@@ -1241,7 +1241,7 @@ ERC 721 ---> Coupon Interface ---> Coupon contract (w/ data + function implement
 */
 
 
-contract Items is SnowflakeERC721, SnowflakeERC721Burnable, SnowflakeERC721Mintable, AddressSnowflakeERC721, ItemInterface {
+contract Items is PhoenixIdentityERC721, PhoenixIdentityERC721Burnable, PhoenixIdentityERC721Mintable, AddressPhoenixIdentityERC721, ItemInterface {
 
     //ID, starting at 1
     uint public nextItemListingsID;
@@ -1249,16 +1249,16 @@ contract Items is SnowflakeERC721, SnowflakeERC721Burnable, SnowflakeERC721Minta
     //Mapping connecting ERC721 items to actual struct objects
     mapping(uint => Item) public itemListings;
 /*
-    constructor(address _snowflakeAddress) public {
-        _constructItems(_snowflakeAddress);
+    constructor(address _phoenixIdentityAddress) public {
+        _constructItems(_phoenixIdentityAddress);
     }
 */
-    function _constructItems(address _snowflakeAddress) internal {
+    function _constructItems(address _phoenixIdentityAddress) internal {
 
-        _constructSnowflakeERC721(_snowflakeAddress);
-        _constructSnowflakeERC721Burnable(_snowflakeAddress);
-        _constructSnowflakeERC721Mintable(_snowflakeAddress);
-        _constructAddressSnowflakeERC721(_snowflakeAddress);
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
+        _constructPhoenixIdentityERC721Burnable(_phoenixIdentityAddress);
+        _constructPhoenixIdentityERC721Mintable(_phoenixIdentityAddress);
+        _constructAddressPhoenixIdentityERC721(_phoenixIdentityAddress);
 
         //Actual Item constructing
         nextItemListingsID = 1;
@@ -1405,17 +1405,17 @@ pragma solidity ^0.5.0;
 
 
 
-contract ItemFeature is Items, SnowflakeEINOwnable {
+contract ItemFeature is Items, PhoenixIdentityEINOwnable {
 
 
-    constructor(address _snowflakeAddress) public {
-        _constructItemFeature(_snowflakeAddress);
+    constructor(address _phoenixIdentityAddress) public {
+        _constructItemFeature(_phoenixIdentityAddress);
     
     }    
 
-    function _constructItemFeature(address _snowflakeAddress) internal {
-        _constructItems(_snowflakeAddress);
-        _constructSnowflakeEINOwnable(_snowflakeAddress);
+    function _constructItemFeature(address _phoenixIdentityAddress) internal {
+        _constructItems(_phoenixIdentityAddress);
+        _constructPhoenixIdentityEINOwnable(_phoenixIdentityAddress);
     }
 
 /*

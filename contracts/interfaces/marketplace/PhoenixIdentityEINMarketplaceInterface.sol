@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-interface SnowflakeEINMarketplaceInterface {
+interface PhoenixIdentityEINMarketplaceInterface {
 
     function setPaymentAddress(address paymentAddress) external returns (bool);
     function setCouponDistributionAddress(address _CouponDistributionAddress) external returns (bool);

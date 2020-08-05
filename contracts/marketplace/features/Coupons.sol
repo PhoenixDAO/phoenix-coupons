@@ -1,12 +1,12 @@
 pragma solidity ^0.5.0;
 
-import '../../ein/token/ERC721/SnowflakeERC721.sol';
-import '../../ein/token/ERC721/SnowflakeERC721Burnable.sol';
-import '../../ein/token/ERC721/SnowflakeERC721Mintable.sol';
+import '../../ein/token/ERC721/PhoenixIdentityERC721.sol';
+import '../../ein/token/ERC721/PhoenixIdentityERC721Burnable.sol';
+import '../../ein/token/ERC721/PhoenixIdentityERC721Mintable.sol';
 
-import '../../ein/token/ERC721/address/AddressSnowflakeERC721.sol';
-import '../../ein/token/ERC721/address/AddressSnowflakeERC721Burnable.sol';
-import '../../ein/token/ERC721/address/AddressSnowflakeERC721Mintable.sol';
+import '../../ein/token/ERC721/address/AddressPhoenixIdentityERC721.sol';
+import '../../ein/token/ERC721/address/AddressPhoenixIdentityERC721Burnable.sol';
+import '../../ein/token/ERC721/address/AddressPhoenixIdentityERC721Mintable.sol';
 
 
 import '../../interfaces/marketplace/CouponInterface.sol';
@@ -34,7 +34,7 @@ ERC 721 ---> Coupon Interface ---> Coupon contract (w/ data + function implement
 */
 
 
-contract Coupons is SnowflakeERC721Burnable, SnowflakeERC721Mintable, AddressSnowflakeERC721Burnable, AddressSnowflakeERC721Mintable, CouponInterface {
+contract Coupons is PhoenixIdentityERC721Burnable, PhoenixIdentityERC721Mintable, AddressPhoenixIdentityERC721Burnable, AddressPhoenixIdentityERC721Mintable, CouponInterface {
 
     //ID, starting at 1, connecting the mappings
     uint public nextAvailableCouponsID;
@@ -42,15 +42,15 @@ contract Coupons is SnowflakeERC721Burnable, SnowflakeERC721Mintable, AddressSno
     //Mapping connecting ERC721 coupons to actual struct objects
     mapping(uint => Coupon) public availableCoupons;
 /*
-    constructor(address _snowflakeAddress) public {
-        _constructCoupons(_snowflakeAddress);
+    constructor(address _phoenixIdentityAddress) public {
+        _constructCoupons(_phoenixIdentityAddress);
     }
 */
-    function _constructCoupons(address _snowflakeAddress) internal {
+    function _constructCoupons(address _phoenixIdentityAddress) internal {
         //Constructor functions of inherited contracts
-        _constructSnowflakeERC721Burnable(_snowflakeAddress);
-        _constructSnowflakeERC721Mintable(_snowflakeAddress);
-        _constructAddressSnowflakeERC721Burnable(_snowflakeAddress);
+        _constructPhoenixIdentityERC721Burnable(_phoenixIdentityAddress);
+        _constructPhoenixIdentityERC721Mintable(_phoenixIdentityAddress);
+        _constructAddressPhoenixIdentityERC721Burnable(_phoenixIdentityAddress);
 
         //Actual constructor logic
         nextAvailableCouponsID = 1;

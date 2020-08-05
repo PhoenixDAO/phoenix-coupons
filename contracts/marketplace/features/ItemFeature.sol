@@ -1,20 +1,20 @@
 pragma solidity ^0.5.0;
 
-import "../../ein/util/SnowflakeEINOwnable.sol";
+import "../../ein/util/PhoenixIdentityEINOwnable.sol";
 import "./Items.sol";
 
 
-contract ItemFeature is Items, SnowflakeEINOwnable {
+contract ItemFeature is Items, PhoenixIdentityEINOwnable {
 
 
-    constructor(address _snowflakeAddress) public {
-        _constructItemFeature(_snowflakeAddress);
+    constructor(address _phoenixIdentityAddress) public {
+        _constructItemFeature(_phoenixIdentityAddress);
     
     }    
 
-    function _constructItemFeature(address _snowflakeAddress) internal {
-        _constructItems(_snowflakeAddress);
-        _constructSnowflakeEINOwnable(_snowflakeAddress);
+    function _constructItemFeature(address _phoenixIdentityAddress) internal {
+        _constructItems(_phoenixIdentityAddress);
+        _constructPhoenixIdentityEINOwnable(_phoenixIdentityAddress);
     }
 
 /*

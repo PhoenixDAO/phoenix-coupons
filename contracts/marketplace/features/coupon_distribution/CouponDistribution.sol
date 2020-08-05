@@ -1,11 +1,11 @@
 pragma solidity ^0.5.0;
 
-import "../../../ein/util/SnowflakeEINOwnable.sol";
+import "../../../ein/util/PhoenixIdentityEINOwnable.sol";
 import "../../../interfaces/marketplace/features/coupon_distribution/CouponDistributionInterface.sol";
 import "../CouponFeature.sol";
-import "../../../interfaces/marketplace/SnowflakeEINMarketplaceInterface.sol";
+import "../../../interfaces/marketplace/PhoenixIdentityEINMarketplaceInterface.sol";
 
-contract CouponDistribution is CouponDistributionInterface, SnowflakeEINOwnable {
+contract CouponDistribution is CouponDistributionInterface, PhoenixIdentityEINOwnable {
 
 /*
 
@@ -21,36 +21,36 @@ Coupon generation function should take the following parameters:
 
 */    
     
-    address public SnowflakeEINMarketplaceAddress;
+    address public PhoenixIdentityEINMarketplaceAddress;
 
 
-    constructor(address _SnowflakeEINMarketplaceAddress, address _snowflakeAddress) public {
-        _constructCouponDistribution(_SnowflakeEINMarketplaceAddress, _snowflakeAddress);
+    constructor(address _PhoenixIdentityEINMarketplaceAddress, address _phoenixIdentityAddress) public {
+        _constructCouponDistribution(_PhoenixIdentityEINMarketplaceAddress, _phoenixIdentityAddress);
     }
 
-    function _constructCouponDistribution(address _SnowflakeEINMarketplaceAddress, address _snowflakeAddress) internal returns (bool) {
+    function _constructCouponDistribution(address _PhoenixIdentityEINMarketplaceAddress, address _phoenixIdentityAddress) internal returns (bool) {
 
-        _constructSnowflakeEINOwnable(_snowflakeAddress);
+        _constructPhoenixIdentityEINOwnable(_phoenixIdentityAddress);
 
         //Actual internal construction
-        SnowflakeEINMarketplaceAddress = _SnowflakeEINMarketplaceAddress;
+        PhoenixIdentityEINMarketplaceAddress = _PhoenixIdentityEINMarketplaceAddress;
     }
 
-    //Function for the owner to switch the address of the CouponFeature, which is why this contract is SnowflakeEINOwnable
-    function setSnowflakeEINMarketplaceAddress(address _SnowflakeEINMarketplaceAddress) public onlyEINOwner returns (bool) {
-        SnowflakeEINMarketplaceAddress = _SnowflakeEINMarketplaceAddress;
+    //Function for the owner to switch the address of the CouponFeature, which is why this contract is PhoenixIdentityEINOwnable
+    function setPhoenixIdentityEINMarketplaceAddress(address _PhoenixIdentityEINMarketplaceAddress) public onlyEINOwner returns (bool) {
+        PhoenixIdentityEINMarketplaceAddress = _PhoenixIdentityEINMarketplaceAddress;
     }
 
     /*==== Distribution Logic ====*/
 
     //For manual logic here, perhaps we should add an optional bytes data parameter? 
     //This would just be ABI-encoded params
-    function distributeCoupon(uint256 couponID, bytes memory data) public onlySnowflakeEINMarketplace returns (bool) {
+    function distributeCoupon(uint256 couponID, bytes memory data) public onlyPhoenixIdentityEINMarketplace returns (bool) {
         return _distributeCoupon(couponID, data);
     }
     
     function _distributeCoupon(uint256 couponID, bytes memory /*/data*/) internal returns (bool) {
-        SnowflakeEINMarketplaceInterface marketplace = SnowflakeEINMarketplaceInterface(SnowflakeEINMarketplaceAddress);
+        PhoenixIdentityEINMarketplaceInterface marketplace = PhoenixIdentityEINMarketplaceInterface(PhoenixIdentityEINMarketplaceAddress);
         //sample distribution of coupon to EIN 10
         uint256 arbitraryEIN = 10;
         marketplace.giveUserCoupon(arbitraryEIN, couponID);
@@ -58,12 +58,12 @@ Coupon generation function should take the following parameters:
    }   
 
     //Same set of functions as above, simply without data param    
-    function distributeCoupon(uint256 couponID) public onlySnowflakeEINMarketplace returns (bool) {
+    function distributeCoupon(uint256 couponID) public onlyPhoenixIdentityEINMarketplace returns (bool) {
         return _distributeCoupon(couponID);
     }
     
     function _distributeCoupon(uint256 couponID) internal returns (bool) {
-        SnowflakeEINMarketplaceInterface marketplace = SnowflakeEINMarketplaceInterface(SnowflakeEINMarketplaceAddress);
+        PhoenixIdentityEINMarketplaceInterface marketplace = PhoenixIdentityEINMarketplaceInterface(PhoenixIdentityEINMarketplaceAddress);
         //sample distribution of coupon to EINs 1-5
         for(uint i = 0; i < 5; i++){
             marketplace.giveUserCoupon(i+1, couponID);
@@ -75,8 +75,8 @@ Coupon generation function should take the following parameters:
 
 
     
-    modifier onlySnowflakeEINMarketplace() {
-        require(msg.sender == SnowflakeEINMarketplaceAddress, "Error [CouponDistribution.sol]: Sender is not SnowflakeEINMarketplace address, as defined within the contract");
+    modifier onlyPhoenixIdentityEINMarketplace() {
+        require(msg.sender == PhoenixIdentityEINMarketplaceAddress, "Error [CouponDistribution.sol]: Sender is not PhoenixIdentityEINMarketplace address, as defined within the contract");
         _;
     }
     

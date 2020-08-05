@@ -14,7 +14,7 @@ contract EINOwnable {
     );
 
     /**
-    * @dev The SnowflakeEINOwnable constructor sets the original `owner` of the contract to the sender
+    * @dev The PhoenixIdentityEINOwnable constructor sets the original `owner` of the contract to the sender
     * account.
     */
 /*    constructor(uint ein) public {

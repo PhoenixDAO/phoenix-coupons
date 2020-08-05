@@ -1,8 +1,8 @@
 const IdentityRegistry = artifacts.require('./_testing/IdentityRegistry.sol')
 const PhoenixToken = artifacts.require('./_testing/PhoenixToken.sol')
-const Snowflake = artifacts.require('./Snowflake.sol')
-const ClientRaindrop = artifacts.require('./resolvers/ClientRaindrop/ClientRaindrop.sol')
-const OldClientRaindrop = artifacts.require('./_testing/OldClientRaindrop.sol')
+const PhoenixIdentity = artifacts.require('./PhoenixIdentity.sol')
+const ClientPhoenixAuthentication = artifacts.require('./resolvers/ClientPhoenixAuthentication/ClientPhoenixAuthentication.sol')
+const OldClientPhoenixAuthentication = artifacts.require('./_testing/OldClientPhoenixAuthentication.sol')
 
 const CouponMarketplaceResolver = artifacts.require('./resolvers/CouponMarketplaceResolver.sol')
 const CouponMarketplaceVia = artifacts.require('./CouponMarketplaceVia.sol')
@@ -26,31 +26,31 @@ async function initialize (owner, users) {
   }
   instances.IdentityRegistry = await IdentityRegistry.new({ from: owner })
 
-  instances.Snowflake = await Snowflake.new(
+  instances.PhoenixIdentity = await PhoenixIdentity.new(
     instances.IdentityRegistry.address, instances.PhoenixToken.address, { from: owner }
   )
 
-  instances.OldClientRaindrop = await OldClientRaindrop.new({ from: owner })
-  instances.ClientRaindrop = await ClientRaindrop.new(
-    instances.Snowflake.address, instances.OldClientRaindrop.address, 0, 0, { from: owner }
+  instances.OldClientPhoenixAuthentication = await OldClientPhoenixAuthentication.new({ from: owner })
+  instances.ClientPhoenixAuthentication = await ClientPhoenixAuthentication.new(
+    instances.PhoenixIdentity.address, instances.OldClientPhoenixAuthentication.address, 0, 0, { from: owner }
   )  
-  await instances.Snowflake.setClientRaindropAddress(instances.ClientRaindrop.address, { from: owner })
+  await instances.PhoenixIdentity.setClientPhoenixAuthenticationAddress(instances.ClientPhoenixAuthentication.address, { from: owner })
 
-  /*instances.CouponMarketplace = await CouponMarketplace.new(1, "Test_Name", "Test_Desc", instances.Snowflake.address, false, false, {from: owner })*/
+  /*instances.CouponMarketplace = await CouponMarketplace.new(1, "Test_Name", "Test_Desc", instances.PhoenixIdentity.address, false, false, {from: owner })*/
 
   return instances
 }
 
 
-async function deployCouponMarketplaceResolver (owner, snowflakeAddress, snowflakeName = "Test_Name", snowflakeDescription = "Test_Desc", callOnAddition = false, callOnRemoval = false, paymentAddress = owner, CouponMarketplaceViaAddress = "0xcD01CD6B160D2BCbeE75b59c393D0017e6BBF427") {
+async function deployCouponMarketplaceResolver (owner, phoenixIdentityAddress, phoenixIdentityName = "Test_Name", phoenixIdentityDescription = "Test_Desc", callOnAddition = false, callOnRemoval = false, paymentAddress = owner, CouponMarketplaceViaAddress = "0xcD01CD6B160D2BCbeE75b59c393D0017e6BBF427") {
 
-  let cmprContract = await CouponMarketplaceResolver.new(snowflakeName, snowflakeDescription, snowflakeAddress, callOnAddition, callOnRemoval, paymentAddress, CouponMarketplaceViaAddress, {from: owner })
+  let cmprContract = await CouponMarketplaceResolver.new(phoenixIdentityName, phoenixIdentityDescription, phoenixIdentityAddress, callOnAddition, callOnRemoval, paymentAddress, CouponMarketplaceViaAddress, {from: owner })
   return cmprContract
 
 }
 
-async function deployCouponMarketplaceVia (owner, snowflakeAddress) {
-  let cmpvContract = await CouponMarketplaceVia.new(snowflakeAddress, { from: owner })
+async function deployCouponMarketplaceVia (owner, phoenixIdentityAddress) {
+  let cmpvContract = await CouponMarketplaceVia.new(phoenixIdentityAddress, { from: owner })
   return cmpvContract
 }
 

@@ -9,7 +9,7 @@
 
 //Settings
 
-const snowflakeAddress = '0xB0D5a36733886a4c5597849a05B315626aF5222E';
+const phoenixIdentityAddress = '0xB0D5a36733886a4c5597849a05B315626aF5222E';
 const instances = {};
 
 
@@ -30,7 +30,7 @@ module.exports = async function (deployer, network, accounts) {
 
 
   //Import contract artifacts
-  const Snowflake = artifacts.require('Snowflake')
+  const PhoenixIdentity = artifacts.require('PhoenixIdentity')
   const IdentityRegistry = artifacts.require('IdentityRegistry')
   const ItemFeature = artifacts.require('ItemFeature')
   const CouponFeature = artifacts.require('CouponFeature')
@@ -41,11 +41,11 @@ module.exports = async function (deployer, network, accounts) {
 
 
 
-  //Grab Snowflake contract deployed at this address
-  instances.Snowflake = await Snowflake.at(snowflakeAddress)
+  //Grab PhoenixIdentity contract deployed at this address
+  instances.PhoenixIdentity = await PhoenixIdentity.at(phoenixIdentityAddress)
 
   //Get IdentityRegistryAddress
-  const identityRegistryAddress = await instances.Snowflake.identityRegistryAddress.call()
+  const identityRegistryAddress = await instances.PhoenixIdentity.identityRegistryAddress.call()
 
   //Grab IdentityRegistry
   instances.IdentityRegistry = await IdentityRegistry.at(identityRegistryAddress)
@@ -62,14 +62,14 @@ module.exports = async function (deployer, network, accounts) {
   
 
   //Deploy ItemFeature, CouponFeature, CouponMarketplaceVia, CouponMarketplaceResolver
-  await deployer.deploy(ItemFeature, instances.Snowflake.address, { from: seller.address })
-  await deployer.deploy(CouponFeature, instances.Snowflake.address, { from: seller.address })
-  await deployer.deploy(CouponMarketplaceVia, instances.Snowflake.address, { from: seller.address })
+  await deployer.deploy(ItemFeature, instances.PhoenixIdentity.address, { from: seller.address })
+  await deployer.deploy(CouponFeature, instances.PhoenixIdentity.address, { from: seller.address })
+  await deployer.deploy(CouponMarketplaceVia, instances.PhoenixIdentity.address, { from: seller.address })
   await deployer.deploy(
         CouponMarketplaceResolver, 
         "Coupon-Marketplace-Resolver",
-        "A test Coupon Marketplace Resolver built on top of Phoenix Snowflake",
-        instances.Snowflake.address,
+        "A test Coupon Marketplace Resolver built on top of Phoenix PhoenixIdentity",
+        instances.PhoenixIdentity.address,
         false, false,
         seller.paymentAddress,
         CouponMarketplaceVia.address, //According to the docs, the regular "imports" should have this populated by the "deployer"
@@ -82,9 +82,9 @@ module.exports = async function (deployer, network, accounts) {
   await instances.CouponMarketplaceVia.setCouponMarketplaceResolverAddress(CouponMarketplaceResolver.address, { from: seller.address })
 
   //Deploy Coupon Distribution contract
-  await deployer.deploy(CouponDistribution, CouponMarketplaceResolver.address, instances.Snowflake.address, { from: seller.address })
+  await deployer.deploy(CouponDistribution, CouponMarketplaceResolver.address, instances.PhoenixIdentity.address, { from: seller.address })
 
-  //Set Coupon Distribution address within SnowflakeEINMarketplace contract (i.e. the Resolver)
+  //Set Coupon Distribution address within PhoenixIdentityEINMarketplace contract (i.e. the Resolver)
   instances.CouponMarketplaceResolver = await CouponMarketplaceResolver.at(CouponMarketplaceResolver.address)
   await instances.CouponMarketplaceResolver.setCouponDistributionAddress(CouponDistribution.address, { from: seller.address })
 
@@ -99,23 +99,23 @@ module.exports = async function (deployer, network, accounts) {
     const PhoenixToken = artifacts.require('./_testing/PhoenixToken.sol')
 
     const SafeMath = artifacts.require('./zeppelin/math/SafeMath.sol')
-    const Snowflake = artifacts.require('./Snowflake.sol')
+    const PhoenixIdentity = artifacts.require('./PhoenixIdentity.sol')
     // const Status = artifacts.require('./resolvers/Status.sol')
 
-    const StringUtils = artifacts.require('./resolvers/ClientRaindrop/StringUtils.sol')
-    const ClientRaindrop = artifacts.require('./resolvers/ClientRaindrop/ClientRaindrop.sol')
-    const OldClientRaindrop = artifacts.require('./_testing/OldClientRaindrop.sol')
+    const StringUtils = artifacts.require('./resolvers/ClientPhoenixAuthentication/StringUtils.sol')
+    const ClientPhoenixAuthentication = artifacts.require('./resolvers/ClientPhoenixAuthentication/ClientPhoenixAuthentication.sol')
+    const OldClientPhoenixAuthentication = artifacts.require('./_testing/OldClientPhoenixAuthentication.sol')
 
     await deployer.deploy(AddressSet)
     deployer.link(AddressSet, IdentityRegistry)
 
     await deployer.deploy(SafeMath)
     deployer.link(SafeMath, PhoenixToken)
-    deployer.link(SafeMath, Snowflake)
+    deployer.link(SafeMath, PhoenixIdentity)
 
     await deployer.deploy(StringUtils)
-    deployer.link(StringUtils, ClientRaindrop)
-    deployer.link(StringUtils, OldClientRaindrop)
+    deployer.link(StringUtils, ClientPhoenixAuthentication)
+    deployer.link(StringUtils, OldClientPhoenixAuthentication)
 
 
   }

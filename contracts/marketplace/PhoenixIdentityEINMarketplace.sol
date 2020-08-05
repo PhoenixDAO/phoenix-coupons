@@ -1,22 +1,22 @@
 pragma solidity ^0.5.0;
 
-import "../ein/util/SnowflakeEINOwnable.sol";
+import "../ein/util/PhoenixIdentityEINOwnable.sol";
 import "./Marketplace.sol";
-import "../interfaces/marketplace/SnowflakeEINMarketplaceInterface.sol";
+import "../interfaces/marketplace/PhoenixIdentityEINMarketplaceInterface.sol";
 import "../interfaces/marketplace/CouponInterface.sol";
 import "../interfaces/marketplace/features/coupon_distribution/CouponDistributionInterface.sol";
 
-contract SnowflakeEINMarketplace is Marketplace, SnowflakeEINOwnable, SnowflakeEINMarketplaceInterface {
+contract PhoenixIdentityEINMarketplace is Marketplace, PhoenixIdentityEINOwnable, PhoenixIdentityEINMarketplaceInterface {
 
 /*
-    constructor(address paymentAddress, address _CouponFeatureAddress, address _ItemFeatureAddress, address _snowflakeAddress) public {
-        _constructSnowflakeEINMarketplace(paymentAddress, _CouponFeatureAddress, _ItemFeatureAddress, _snowflakeAddress);
+    constructor(address paymentAddress, address _CouponFeatureAddress, address _ItemFeatureAddress, address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityEINMarketplace(paymentAddress, _CouponFeatureAddress, _ItemFeatureAddress, _phoenixIdentityAddress);
     
     }    
 */
-    function _constructSnowflakeEINMarketplace(address paymentAddress, address _CouponFeatureAddress, address _ItemFeatureAddress, address _snowflakeAddress) internal {
-        _constructMarketplace(paymentAddress, _CouponFeatureAddress, _ItemFeatureAddress/*,_snowflakeAddress*/);
-        _constructSnowflakeEINOwnable(_snowflakeAddress);
+    function _constructPhoenixIdentityEINMarketplace(address paymentAddress, address _CouponFeatureAddress, address _ItemFeatureAddress, address _phoenixIdentityAddress) internal {
+        _constructMarketplace(paymentAddress, _CouponFeatureAddress, _ItemFeatureAddress/*,_phoenixIdentityAddress*/);
+        _constructPhoenixIdentityEINOwnable(_phoenixIdentityAddress);
     }
 
     function setPaymentAddress(address paymentAddress) public onlyEINOwner returns (bool) {

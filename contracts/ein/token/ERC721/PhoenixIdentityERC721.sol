@@ -1,17 +1,17 @@
 pragma solidity ^0.5.2;
 
-import "./SnowflakeERC721Interface.sol";
-import "./SnowflakeERC721ReceiverInterface.sol";
+import "./PhoenixIdentityERC721Interface.sol";
+import "./PhoenixIdentityERC721ReceiverInterface.sol";
 import "../../../zeppelin/math/SafeMath.sol";
 import "../../../zeppelin/drafts/Counters.sol";
 import "../../../zeppelin/introspection/ERC165.sol";
-import "../../../snowflake_custom/SnowflakeReader.sol";
+import "../../../phoenixIdentity_custom/PhoenixIdentityReader.sol";
 
 /**
- * @title Snowflake ERC721 Non-Fungible Token Standard basic implementation
+ * @title PhoenixIdentity ERC721 Non-Fungible Token Standard basic implementation
  * @dev see https://eips.ethereum.org/EIPS/eip-721
  */
-contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
+contract PhoenixIdentityERC721 is ERC165, PhoenixIdentityERC721Interface, PhoenixIdentityReader {
     using SafeMath for uint256;
     using Counters for Counters.Counter;
 
@@ -50,12 +50,12 @@ contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
      *  =========================================== END OF EVAL
      */
 /*
-    constructor (address _snowflakeAddress) public {
-        _constructSnowflakeERC721(_snowflakeAddress);
+    constructor (address _phoenixIdentityAddress) public {
+        _constructPhoenixIdentityERC721(_phoenixIdentityAddress);
     }
 */
-    function _constructSnowflakeERC721(address _snowflakeAddress) internal {
-        _constructSnowflakeReader(_snowflakeAddress);
+    function _constructPhoenixIdentityERC721(address _phoenixIdentityAddress) internal {
+        _constructPhoenixIdentityReader(_phoenixIdentityAddress);
 
          // register the supported interfaces to conform to ERC721 via ERC165
         _registerInterface(_INTERFACE_ID_ERC721);       
@@ -282,7 +282,7 @@ contract SnowflakeERC721 is ERC165, SnowflakeERC721Interface, SnowflakeReader {
             return true;
         }
 */
-        bytes4 retval = SnowflakeERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
+        bytes4 retval = PhoenixIdentityERC721ReceiverInterface(to).onERC721Received(getEIN(msg.sender), from, tokenId, _data);
         return (retval == _ERC721_RECEIVED);
     }
 

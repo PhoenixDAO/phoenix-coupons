@@ -8,7 +8,7 @@
 
 const deploymentConfig = {
 
-  root: "[PATH-TO-REPO]/PhoenixSnowflake-Marketplace-Coupons/contracts",
+  root: "[PATH-TO-REPO]/PhoenixPhoenixIdentity-Marketplace-Coupons/contracts",
   mnemonic: "[12-WORD-WALLET-MNEMONIC]",
   infuraKey: "[INFURA-API-KEY]",
 
@@ -18,7 +18,7 @@ const deploymentConfig = {
   },
 
   flatten: {
-    writeLocation: "[PATH-TO-REPO]/PhoenixSnowflake-Marketplace-Coupons/flattened"
+    writeLocation: "[PATH-TO-REPO]/PhoenixPhoenixIdentity-Marketplace-Coupons/flattened"
   }, deployment: { confirmations: 2 }
 
 };
